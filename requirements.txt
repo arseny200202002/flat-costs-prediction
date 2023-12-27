@@ -1,0 +1,14 @@
+Django
+requests
+
+pandas
+scikit-learn
+numpy
+
+beautifulsoup4
+
+peewee
+psycopg2
+
+unittest2
+pytest
