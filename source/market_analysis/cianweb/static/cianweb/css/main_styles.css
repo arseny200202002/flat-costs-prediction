@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+    font-weight: 600;
+}
+body {
+    background: #8f8585;
+    width: 100vw;
+    box-sizing: border-box;
+}
+.wrapper {
+    background: #8f8585;
+}
+header {
+    width: 100%;
+    background: red;
+    display: flex;
+    justify-content: space-around;
+}
+.main {
+    width: 800px;
+    height: 1000px;
+    margin: 0 auto;
+    background: #000;
+
+    padding: 10px;
+    text-align: center;
+    align-items: center;
+}

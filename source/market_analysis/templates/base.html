@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'cianweb/css/main_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'cianweb/css/header_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'cianweb/css/parser_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'cianweb/css/ML_styles.css' %}">
+
+    <title>{{ title }}</title>
+    
+</head>
+<body>
+    <header>
+        {% include 'header.html' %}
+    </header>
+
+    <div class="wrapper">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+
+    <header>
+        {% include 'footer.html' %}
+    </header>
+</body>
+</html>

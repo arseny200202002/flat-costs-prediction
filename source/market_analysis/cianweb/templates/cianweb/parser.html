@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content  %}
+
+<div class="main">
+    <div class="container">
+        <h1>Параметры сбора информации</h1>
+        <form action="{% url 'parser' %}" method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form">
+                <label>{{ field.label }}</label>{{ field }}
+            </div>
+            {% endfor %}
+
+            <div class="btn-container">
+                <input class="btn" type="submit" value="Submit">
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script src="{% static 'cianweb/js/metro.js' %}"></script>
+
+{% endblock %}

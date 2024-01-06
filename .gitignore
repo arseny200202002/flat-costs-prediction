@@ -1,2 +1,12 @@
 .venv
-django-help.txt
+Django_instructions
+to_do.txt
+source/local_development/test_datasets
+
+*.pyc
+__pycache__
+
+/env
+*.env
+
+.vscode

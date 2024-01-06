@@ -10,5 +10,6 @@ beautifulsoup4
 peewee
 psycopg2
 
-unittest2
 pytest
+
+django-environ
