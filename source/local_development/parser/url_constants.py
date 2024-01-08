@@ -1,50 +1,27 @@
-BASE_LINK = "https://cian.ru/cat.php?engine_version=2&p={}&region={}"
+BASE_LINK = "https://cian.ru/cat.php?engine_version=2"
+PAGE = '&p={}'
+ROOM = '&room{}=1'
+STUDIO = '&room9=1'
+
+ALL_ROOMS = ROOM.format(1)+ROOM.format(2)+ROOM.format(3)+ROOM.format(4)+ROOM.format(5)+ROOM.format(6)  
 ACCOMMODATION_TYPE_PARAMETER = "&offer_type={}"
+ACCOMMODATION_TYPES = {
+    'квартира': 'flat'
+}
+
 DURATION_TYPE_PARAMETER = "&type={}"
+
 DEAL_TYPE = "&deal_type={}"
+DEAL_TYPES = {
+    'покупка': 'sale',
+    'аренда': 'rent'
+}
 
-FIELDS = ['city', 'district', 'metro', 'rent_price', 'street', 'building', 'floor', 'max_floor', 'area', 'rooms']
+CITY = '&region={}'
+METRO = '&metro%5B0%5D={}'
+DISTRICT = '&district%5B0%5D={}'
 
-ROOM = "&room{}=1"
-STUDIO = "&room9=1"
-WITHOUT_NEIGHBORS_OF_CITY = "&with_neighbors=0"
-IS_ONLY_HOMEOWNER = "&is_by_homeowner=1"
-HAVE_BALCONIES = "&min_balconies=1"
-HAVE_LOGGIA = "&loggia=1"
-MIN_HOUSE_YEAR = "&min_house_year={}"
-MAX_HOUSE_YEAR = "&min_house_year={}"
-MIN_PRICE = "&minprice={}"
-MAX_PRICE = "&maxprice={}"
-MIN_FLOOR = "&minfloor={}"
-MAX_FLOOR = "&maxfloor={}"
-MIN_TOTAL_FLOOR = "&minfloorn={}"
-MAX_TOTAL_FLOOR = "&maxfloorn={}"
-
-HOUSE_MATERIAL_TYPE = "&house_material%5B0%5D={}"
-
-METRO_FOOT_MINUTE = "&only_foot=2&foot_min={}"
-METRO_ID = "&metro%5B0%5D={}"
-
-SORT_BY_PRICE_FROM_MIN_TO_MAX = "&sort=price_object_order"
-SORT_BY_PRICE_FROM_MAX_TO_MIN = "&sort=total_price_desc"
-SORT_BY_TOTAL_METERS_FROM_MAX_TO_MIN = "&sort=area_order"
-SORT_BY_CREATION_DATA_FROM_NEWER_TO_OLDER = "&sort=creation_date_desc"
-SORT_BY_CREATION_DATA_FROM_OLDER_TO_NEWER = "&sort=creation_date_asc"
-
-IS_SORT_BY_PRICE_FROM_MIN_TO_MAX = "price_from_min_to_max"
-IS_SORT_BY_PRICE_FROM_MAX_TO_MIN = "price_from_max_to_min"
-IS_SORT_BY_TOTAL_METERS_FROM_MAX_TO_MIN = "total_meters_from_max_to_min"
-IS_SORT_BY_CREATION_DATA_FROM_NEWER_TO_OLDER = "creation_data_from_newer_to_older"
-IS_SORT_BY_CREATION_DATA_FROM_OLDER_TO_NEWER = "creation_data_from_older_to_newer"
-
-NOT_STREET_ADDRESS_ELEMENTS = {"ЖК", "м.", "мкр.", "Жилой комплекс", "Жилой Комплекс"}
-
-STREET_TYPES = {"улица", "аллея", "бульвар", "линия", "набережная", "тракт", "тупик", "шоссе", "переулок", "проспект",
-                "проезд", "раздъезд", "мост", "авеню"}
-
-SPECIFIC_FIELDS_FOR_RENT_LONG = {"price_per_month", "commissions"}
-SPECIFIC_FIELDS_FOR_RENT_SHORT = {"price_per_day"}
-SPECIFIC_FIELDS_FOR_SALE = {"price", "residential_complex", "object_type", "finish_type"}
+FIELDS = ['price', 'type', 'area', 'rooms', 'floor', 'max_floor', 'district', 'metro', 'realtor', 'realtor_name']
 
 CITIES = [
     ['Москва', '1'],
@@ -208,7 +185,8 @@ OTHER_CITIES = [
     ['Яхрома', '176463'],
 ]
 
-CITIES.extend(OTHER_CITIES)
+# по меньшей мере 5000 районов
+DISTRICTS = []
 
 METRO_STATIONS = {
     "Москва": [

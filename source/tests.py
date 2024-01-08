@@ -1,6 +1,13 @@
-from tests.preprocess_tests import *
-import unittest
+from tests.parsing_tests import ParserTest
+import datetime
 
 if __name__ == "__main__":
-    test1 = PreprocessTest()
-    test1.test_df_creation()
+    test = ParserTest()
+
+    #test.test_parser()
+    #test.test_create_url()
+    
+
+    test.test_parse_page()
+
+

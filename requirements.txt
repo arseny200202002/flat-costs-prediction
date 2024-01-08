@@ -13,3 +13,8 @@ psycopg2
 pytest
 
 django-environ
+
+stem
+socks
+fake-useragent
+cloudscrapper
