@@ -1,6 +1,5 @@
 import csv
 import datetime
-import requests
 from bs4 import BeautifulSoup as bs
 import cloudscraper
 import re
@@ -24,12 +23,19 @@ def attempts(func):
         return result
     return inner
 
-
 class CianParser:
+    """
+    city: номер города в базе Циан \n
+    save_file_directory: путь к папке где будут создаваться файлы csv \n
+    metro: номер метро в базе Циан\n
+    district: номер района в базе Циан\n
+    debug: режим логгирования
+    """
     def __init__(self, city,
                  save_file_directory=BASIC_DATA_DIRECTORY,
                  metro=None,
-                 district=None):
+                 district=None,
+                 debug=False):
         
         self.city = city
         self.metro = metro
@@ -41,6 +47,9 @@ class CianParser:
 
         self.url = self.create_url()
 
+        self.debug = debug
+
+    @attempts
     def navbar_inspection(self, url, page) -> tuple:
         url += PAGE.format(page)
         responce = self.scrapper.get(url).text
@@ -54,7 +63,6 @@ class CianParser:
 
         return second, last
 
-    @attempts
     def find_pagenum(self, url):
         for page in range(1, 500, 100):
             second, last = self.navbar_inspection(url, page)
@@ -81,86 +89,66 @@ class CianParser:
 
             cur_page = (max_page + min_page)//2
 
-    #@attempts
-    def parse_page(self, current_url):
-        try:
-            responce = self.scrapper.get(current_url).text
-        except:
-            logging.error('problem with requests')
-            return
-
+    def get_offers(self, url) -> list:
+        responce = self.scrapper.get(url).text
         soup = bs(responce, 'html.parser')
-
         offers = soup.find_all(attrs={'data-testid': 'offer-card'})
 
-        logging.info(f'offers detected: {len(offers)}')
+        return offers
+
+    def parse_page(self, current_url):
+        offers = self.get_offers(current_url)
 
         for offer in offers:
-            #landlord information
-            realtor = offer.find('span', {'class': '_93444fe79c--color_gray60_100--mYFjS'}).text
-            realtor_name = offer.find('span', {'class': '_93444fe79c--color_current_color--vhuGI'}).text
+            realtor =       offer.find('span',  {'class': '_93444fe79c--color_gray60_100--mYFjS'}).text
+            realtor_name =  offer.find('span',  {'class': '_93444fe79c--color_current_color--vhuGI'}).text
+            price_block =   offer.find('div',   {'class': '_93444fe79c--container--aWzpE'})
 
-            #price information
-            price_block = offer.find('div', {'class': '_93444fe79c--container--aWzpE'})
             string = price_block.find('span', {'class': ''}).text
-            start, end = re.search(r'([0-9]+\s)+', string).span()
-            price = int(''.join(string[start:end].strip().split()))
+            price = int(''.join(re.search(r'([0-9]+\s)+', string).group().strip().split()))
+            if re.search(r'/сут', string): price *= 30
 
-            if(re.match(r'/сутки', string)): price *= 30
-
-            #metro
-            metro = None
             try:
                 metro_block = offer.find('a', {'class': '_93444fe79c--link--BwwJO'})
                 metro = metro_block.find('div', {'class': ''}).text
             except:
-                pass
+                metro = None
             
-            #district
-            geo_info_block = offer.find('div', {'class': '_93444fe79c--labels--L8WyJ'})
-            a_blocks = geo_info_block.find_all('a')
+            a_blocks = offer.find('div', {'class': '_93444fe79c--labels--L8WyJ'}).find_all('a')
             block_text = [block.text for block in a_blocks]
+
 
             district = None
             for text in block_text:
                 if re.match(r'^р-н', text):
                     district = ' '.join(text.split()[1:])
-                if re.match(r'[0-9]+/[0-9]+', text):
-                    floor, max_floor = map(int, text.split('/'))
             
-            #main info
             try:
-                text = subtitle = offer.find('span', {'data-mark': 'OfferSubtitle'}).text
+                text = offer.find('span', {'data-mark': 'OfferSubtitle'}).text
             except:
                 title = offer.find('span', {'data-mark': 'OfferTitle'})
                 text =  title.find('span', {'class': ''}).text
-                
-            info = text.split()
             
-            start, end = re.search(r', [0-9]+,?[0-9]+ м', text).span()
-            area = float(text[start+2:end-1].replace(',', '.'))
+            area =  float(re.search(r', [0-9]+,?[0-9]+ м', text).group()[2:-1].replace(',', '.'))
+            res = re.search(r'[0-9]+/[0-9]+', text)
+            floor, max_floor = map(int, res.group().split('/'))
+
+            info = text.split()
 
             if('студия' in info[0].lower()):
                 rooms = 0
+                flat_type = 'студия'
             else:
-                try: 
-                    rooms = int(info[0][0])
-                except:
-                    continue
+                rooms = int(info[0][0])
 
             flat_type = info[1][:-1]
 
-            new_flat = [price,
-                        flat_type,
-                        area,
-                        rooms,
-                        floor,
-                        max_floor,
-                        district,
-                        metro,
-                        realtor,
-                        realtor_name
-                        ]
+            new_flat = [price, flat_type, area, rooms, floor, max_floor, district, metro, realtor, realtor_name]
+
+            if self.debug:
+                logging.info(f'{new_flat}')
+                link = offer.find('a', {'class': '_93444fe79c--link--VtWj6'}).get('href')
+                logging.info(f'ссылка: {link}')
 
             self.writer.writerow(new_flat)
 
@@ -179,10 +167,7 @@ class CianParser:
         return url
 
     def parse(self):
-        #find number of pages
-        #pagenum = self.find_pagenum(self.url + PAGE.format(1))
-
-        pagenum = 2
+        pagenum = self.find_pagenum(self.url + PAGE.format(1))
 
         today = datetime.datetime.today().strftime('%Y_%m_%d_%H_%M_%S')
 
@@ -192,11 +177,4 @@ class CianParser:
 
             for page in range(1, pagenum + 1):
                 self.parse_page(self.url + PAGE.format(page))
-
-if __name__ == "__main__":
-    parser = CianParser(city=1)
-    parser.parse()
-
-
-
     

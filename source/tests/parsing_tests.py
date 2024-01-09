@@ -31,3 +31,10 @@ class ParserTest(unittest.TestCase):
         with open(f'source/tests/parser_test_data/test.csv', 'w', newline='', encoding='utf-8') as file:
             parser.writer = csv.writer(file)
             parser.parse_page(parser.url + '&p=1')
+
+    def test_parse(self):
+        parser = CianParser(city=1,
+                            save_file_directory='source/tests/parser_test_data/',
+                            debug=False)
+        
+        parser.parse()
